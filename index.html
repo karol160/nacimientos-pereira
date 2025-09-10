@@ -8,10 +8,10 @@
 </head>
 <body>
   <header>
-    <nav class="navbar">
+    <nav id="primary-navigation" class="navbar">
       <div class="logo">📊 Datos Abiertos</div>
-      <button class="menu-toggle">☰</button>
-      <ul class="menu">
+      <button id="menuToggle" class="menu-toggle" aria-expanded="false" aria-label="Abrir menú">☰</button>
+      <ul id="navLinks" class="menu">
         <li><a href="index.html">Inicio</a></li>
         <li><a href="general.html">Estadísticas Generales</a></li>
         <li><a href="detalles.html">Análisis Detallado</a></li>
@@ -20,6 +20,8 @@
     </nav>
   </header>
 
+  <script src="script.js"></script>
+  
   <main class="main-home">
     <section class="hero">
       <div class="hero-content">

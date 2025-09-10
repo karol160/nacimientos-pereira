@@ -1,59 +1,38 @@
-(function(){
+document.addEventListener('DOMContentLoaded', () => {
   const menuToggle = document.getElementById('menuToggle');
-  const nav = document.getElementById('primary-navigation');
   const navLinks = document.getElementById('navLinks');
+  const nav = document.getElementById('primary-navigation');
 
-  if (menuToggle && nav) {
-    menuToggle.addEventListener('click', (e) => {
-      const isOpen = nav.classList.toggle('open');
-      menuToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-      e.stopPropagation();
-    });
+  if (!menuToggle || !navLinks) return;
 
-    // cerrar cuando se hace clic fuera
-    document.addEventListener('click', (e) => {
-      if (!nav.contains(e.target) && !menuToggle.contains(e.target) && nav.classList.contains('open')) {
-        nav.classList.remove('open');
-        menuToggle.setAttribute('aria-expanded', 'false');
-      }
-    });
+  menuToggle.addEventListener('click', (e) => {
+    const isOpen = navLinks.classList.toggle('open');
+    menuToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    e.stopPropagation();
+  });
 
-    // cerrar con Esc
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && nav.classList.contains('open')) {
-        nav.classList.remove('open');
-        menuToggle.setAttribute('aria-expanded', 'false');
-      }
-    });
-
-    // cerrar al hacer click en un link
-    navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
-      nav.classList.remove('open');
+  document.addEventListener('click', (e) => {
+    if (!nav.contains(e.target) && navLinks.classList.contains('open')) {
+      navLinks.classList.remove('open');
       menuToggle.setAttribute('aria-expanded', 'false');
-    }));
-  }
-})();
+    }
+  });
 
-// ---- Toggle sección Fuentes y metodología ----
-(function(){
-  const toggleBtn = document.getElementById('toggleDataDetails');
-  const details = document.getElementById('dataDetails');
-  if (toggleBtn && details) {
-    toggleBtn.addEventListener('click', () => {
-      const isOpen = details.hasAttribute('hidden') ? true : false;
-      if (isOpen) {
-        details.removeAttribute('hidden');
-        toggleBtn.setAttribute('aria-expanded', 'true');
-      } else {
-        details.setAttribute('hidden', '');
-        toggleBtn.setAttribute('aria-expanded', 'false');
-      }
-    });
-  }
-})();
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && navLinks.classList.contains('open')) {
+      navLinks.classList.remove('open');
+      menuToggle.setAttribute('aria-expanded', 'false');
+    }
+  });
 
+  navLinks.querySelectorAll('a').forEach((a) =>
+    a.addEventListener('click', () => {
+      navLinks.classList.remove('open');
+      menuToggle.setAttribute('aria-expanded', 'false');
+    })
+  );
+});
 
-// Función auxiliar para insertar texto de interpretación
 function agregarInterpretacion(idContenedor, texto) {
   const contenedor = document.getElementById(idContenedor).parentNode;
   let p = contenedor.querySelector(".chart-desc");
@@ -163,7 +142,6 @@ d3.dsv(";", "nacimientos_pereira2020_1.csv").then(data => {
     }
   });
 
-  // Interpretación automática sexo
   let mayorSexo = labelsSexo[valoresSexo.indexOf(Math.max(...valoresSexo))];
   agregarInterpretacion("sexoChart", `La mayoría de nacimientos fueron de sexo ${mayorSexo.toLowerCase()}.`);
 
@@ -194,9 +172,8 @@ d3.dsv(";", "nacimientos_pereira2020_1.csv").then(data => {
             autoSkip: false,
             callback: function(value, index) {
               let label = this.getLabelForValue(value);
-              // Si es muy largo, lo parte en 2 líneas
               return label.length > 12 
-                ? label.match(/.{1,12}/g) // divide cada 12 caracteres
+                ? label.match(/.{1,12}/g)
                 : label;
             }
           }
@@ -207,7 +184,6 @@ d3.dsv(";", "nacimientos_pereira2020_1.csv").then(data => {
     }
   });
 
-  // Interpretación automática zona
   let mayorZona = labelsZona[valoresZona.indexOf(Math.max(...valoresZona))];
   agregarInterpretacion("zonaChart", `La mayor concentración de nacimientos ocurrió en la ${mayorZona.toLowerCase()}.`);
 
@@ -231,7 +207,6 @@ d3.dsv(";", "nacimientos_pereira2020_1.csv").then(data => {
     }
   });
 
-  // Interpretación automática régimen
   let mayorRegimen = labelsRegimen[valoresRegimen.indexOf(Math.max(...valoresRegimen))];
   agregarInterpretacion("regimenChart", `Predomina el régimen de salud ${mayorRegimen.toLowerCase()}.`);
 });

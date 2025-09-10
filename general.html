@@ -8,12 +8,11 @@
   <script src="https://d3js.org/d3.v7.min.js"></script>
 </head>
 <body>
-  
-    <header>
-    <nav class="navbar">
+  <header>
+    <nav id="primary-navigation" class="navbar">
       <div class="logo">📊 Datos Abiertos</div>
-      <button class="menu-toggle">☰</button>
-      <ul class="menu">
+      <button id="menuToggle" class="menu-toggle" aria-expanded="false" aria-label="Abrir menú">☰</button>
+      <ul id="navLinks" class="menu">
         <li><a href="index.html">Inicio</a></li>
         <li><a href="general.html">Estadísticas Generales</a></li>
         <li><a href="detalles.html">Análisis Detallado</a></li>
@@ -22,9 +21,10 @@
     </nav>
   </header>
 
+  <script src="script.js"></script>
+
   <h1>Nacimientos en Pereira 2020 a 2024</h1>
 
-  <!-- CONTENEDOR DE TODAS LAS GRÁFICAS -->
   <div class="charts">
 
     <div class="chart-container pie">
@@ -46,8 +46,6 @@
     </div>
 
   </div>
-  <!-- FIN DEL CONTENEDOR -->
 
-  <script src="script.js"></script>
 </body>
 </html>
