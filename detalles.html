@@ -70,7 +70,7 @@
       explicacionTexto.textContent = explicaciones[tipo].texto;
     }
 
-    d3.dsv(";", "data/nacimientos_pereira2020_1.csv").then(data => {
+    d3.dsv(";", "nacimientos_pereira2020_1.csv").then(data => {
       data.forEach(d => {
         let edadMatch = (d["Edad (años)"] || "").trim().match(/^\d+/);
         d.EDAD = edadMatch ? +edadMatch[0] : NaN;
