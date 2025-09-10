@@ -9,6 +9,19 @@
 
 </head>
 <body>
+    <header>
+    <nav class="navbar">
+      <div class="logo">📊 Datos Abiertos</div>
+      <button class="menu-toggle">☰</button>
+      <ul class="menu">
+        <li><a href="index.html">Inicio</a></li>
+        <li><a href="general.html">Estadísticas Generales</a></li>
+        <li><a href="detalles.html">Análisis Detallado</a></li>
+        <li><a href="conclusiones.html">Conclusiones</a></li>
+      </ul>
+    </nav>
+  </header>
+
   <h1>Detalles de los nacimientos en Pereira 2020 - 2024</h1>
 
   <!-- Selector de gráfico -->
@@ -57,7 +70,7 @@
       explicacionTexto.textContent = explicaciones[tipo].texto;
     }
 
-    d3.dsv(";", "data/nacimientos_pereira2020.csv").then(data => {
+    d3.dsv(";", "data/nacimientos_pereira2020_1.csv").then(data => {
       data.forEach(d => {
         let edadMatch = (d["Edad (años)"] || "").trim().match(/^\d+/);
         d.EDAD = edadMatch ? +edadMatch[0] : NaN;

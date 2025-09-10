@@ -3,43 +3,80 @@
 <head>
   <meta charset="UTF-8">
   <title>Conclusiones</title>
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="style.css">
   <script src="https://d3js.org/d3.v7.min.js"></script>
 </head>
 <body>
-  <h1>Conclusiones sobre los nacimientos en Pereira 2020</h1>
+  <header>
+    <nav class="navbar">
+      <div class="logo">📊 Datos Abiertos</div>
+      <button class="menu-toggle">☰</button>
+      <ul class="menu">
+        <li><a href="index.html">Inicio</a></li>
+        <li><a href="general.html">Estadísticas Generales</a></li>
+        <li><a href="detalles.html">Análisis Detallado</a></li>
+        <li><a href="conclusiones.html" class="active">Conclusiones</a></li>
+      </ul>
+    </nav>
+  </header>
 
-  <div id="resumen"></div>
+  <main>
+    <h1>Conclusiones sobre los nacimientos en Pereira (2020 - 2024)</h1>
+
+    <div id="resumen" class="card"></div>
+    <div id="conclusionFinal" class="card conclusion"></div>
+  </main>
 
   <script>
-    d3.csv("data/nacimientos_pereira2020.csv").then(data => {
-      // Total de nacimientos
+    d3.dsv(";", "data/nacimientos_pereira2020_1.csv").then(data => {
       let total = data.length;
 
-      // Porcentaje por sexo
-      let conteoSexo = d3.rollup(data, v => v.length, d => d.SEXO);
+      // Normalizar claves
+      data.forEach(d => {
+        d.Sexo = (d["Sexo"] || "").trim().toUpperCase();
+        d.Regimen = (d["Regimen Salud"] || "").trim().toUpperCase();
+        d.Zona = (d["Zona (U=urbana; R=rural)"] || "").trim().toUpperCase();
+      });
+
+      // Conteo por sexo
+      let conteoSexo = d3.rollup(data, v => v.length, d => d.Sexo);
       let masculino = conteoSexo.get("MASCULINO") || 0;
       let femenino = conteoSexo.get("FEMENINO") || 0;
       let porcentajeM = ((masculino / total) * 100).toFixed(1);
       let porcentajeF = ((femenino / total) * 100).toFixed(1);
 
-      // Régimen de salud más frecuente
-      let conteoRegimen = d3.rollup(data, v => v.length, d => d.REGIMEN_SALUD);
+      // Régimen predominante
+      let conteoRegimen = d3.rollup(data, v => v.length, d => d.Regimen);
       let regimenTop = Array.from(conteoRegimen.entries()).sort((a, b) => b[1] - a[1])[0];
 
-      // Zona más frecuente
-      let conteoZona = d3.rollup(data, v => v.length, d => d.ZONA);
+      // Zona predominante
+      let conteoZona = d3.rollup(data, v => v.length, d => d.Zona);
       let zonaTop = Array.from(conteoZona.entries()).sort((a, b) => b[1] - a[1])[0];
 
-      // Construir HTML
+      // Resumen automático
       let resumenHTML = `
         <p><strong>Total de nacimientos registrados:</strong> ${total}</p>
-        <p><strong>Distribución por sexo:</strong> Masculino ${porcentajeM}% (${masculino}), Femenino ${porcentajeF}% (${femenino})</p>
+        <p><strong>Distribución por sexo:</strong> Masculino ${porcentajeM}% (${masculino}), 
+        Femenino ${porcentajeF}% (${femenino})</p>
         <p><strong>Régimen de salud predominante:</strong> ${regimenTop[0]} (${regimenTop[1]} nacimientos)</p>
-        <p><strong>Zona predominante:</strong> ${zonaTop[0]} (${zonaTop[1]} nacimientos)</p>
+        <p><strong>Zona con mayor concentración:</strong> ${zonaTop[0]} (${zonaTop[1]} nacimientos)</p>
       `;
-
       document.getElementById("resumen").innerHTML = resumenHTML;
+
+      // Conclusión final (texto interpretativo)
+      let conclusionHTML = `
+        <h2>Conclusión general</h2>
+        <p>Los datos muestran que la mayoría de los nacimientos en Pereira entre 2020 y 2024 
+        corresponden a <strong>hombres</strong>, ocurren principalmente en la 
+        <strong>${zonaTop[0].toLowerCase()}</strong> y están asociados al régimen de salud 
+        <strong>${regimenTop[0].toLowerCase()}</strong>. 
+        Esto refleja una fuerte centralización de los servicios de salud en el área urbana 
+        y un predominio del régimen contributivo, aunque también se evidencia una presencia 
+        significativa del régimen subsidiado. 
+        En general, los nacimientos se concentran en mujeres jóvenes residentes en la cabecera municipal, 
+        lo que destaca la necesidad de fortalecer la atención en zonas rurales y poblaciones vulnerables.</p>
+      `;
+      document.getElementById("conclusionFinal").innerHTML = conclusionHTML;
     });
   </script>
 </body>

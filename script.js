@@ -136,7 +136,7 @@ function crearGrafico(tipo) {
   }
 }
 
-d3.dsv(";", "data/nacimientos_pereira2020.csv").then(data => {
+d3.dsv(";", "data/nacimientos_pereira2020_1.csv").then(data => {
   data.forEach(d => {
     d.Sexo = (d["Sexo"] || "").trim().toUpperCase();
     d.Zona = (d["Zona (U=urbana; R=rural)"] || "").trim().toUpperCase();
