@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Nacimientos en Pereira 2020 - General</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+  
+
+  <h1>Nacimientos en Pereira 2020 a 2024</h1>
+
+  <!-- CONTENEDOR DE TODAS LAS GRÁFICAS -->
+  <div class="charts">
+
+    <div class="chart-container pie">
+      <h2>Distribución por sexo</h2>
+      <canvas id="sexoChart"></canvas>
+      <p class="chart-desc">La mayoría de nacimientos en Pereira 2020-2024 fueron masculinos, con una ligera diferencia sobre los femeninos.</p>
+    </div>
+
+    <div class="chart-container bar">
+      <h2>Distribución por zona</h2>
+      <canvas id="zonaChart"></canvas>
+      <p class="chart-desc">La gran mayoría de nacimientos se concentran en la cabecera municipal, siendo mínimos en zonas rurales y centros poblados.</p>
+    </div>
+
+    <div class="chart-container doughnut">
+      <h2>Distribución por régimen de salud</h2>
+      <canvas id="regimenChart"></canvas>
+      <p class="chart-desc">Predomina el régimen contributivo, seguido del subsidiado, mientras que los no asegurados y régimen de excepción son minoría.</p>
+    </div>
+
+  </div>
+  <!-- FIN DEL CONTENEDOR -->
+
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Detalles de Nacimientos en Pereira 2020</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+
+</head>
+<body>
+  <h1>Detalles de los nacimientos en Pereira 2020 - 2024</h1>
+
+  <!-- Selector de gráfico -->
+  <label for="graficoSelect">Seleccione el gráfico:</label>
+  <select id="graficoSelect">
+    <option value="edad">Distribución por edad de la madre</option>
+    <option value="sexoRegimen">Distribución de sexo según régimen de salud</option>
+  </select>
+
+  <!-- Contenedor -->
+  <main class="details">
+    <div class="chart-section">
+      <div class="chart-explanation" id="explicacion">
+        <h3 id="explicacionTitulo">Título del gráfico</h3>
+        <p id="explicacionTexto">Aquí aparecerá automáticamente una explicación sobre el gráfico seleccionado.</p>
+      </div>
+      <div class="chart-box">
+        <canvas id="graficoChart"></canvas>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const graficoSelect = document.getElementById('graficoSelect');
+    const ctx = document.getElementById('graficoChart').getContext('2d');
+    let chart;
+
+    // Referencias de explicación
+    const explicacionTitulo = document.getElementById("explicacionTitulo");
+    const explicacionTexto = document.getElementById("explicacionTexto");
+
+    // Diccionario de explicaciones
+    const explicaciones = {
+      edad: {
+        titulo: "Distribución por edad de la madre",
+        texto: "Este gráfico muestra la cantidad de nacimientos según la edad de la madre. Se observa una mayor concentración entre los 18 y 25 años, reflejando la etapa de mayor fertilidad en la población."
+      },
+      sexoRegimen: {
+        titulo: "Distribución de sexo según régimen de salud",
+        texto: "Este gráfico representa la distribución de nacimientos entre hombres y mujeres según el régimen de salud (contributivo, subsidiado, no asegurado, excepción). Se aprecia que la mayor parte de los nacimientos corresponde al régimen contributivo."
+      }
+    };
+
+    function actualizarExplicacion(tipo) {
+      explicacionTitulo.textContent = explicaciones[tipo].titulo;
+      explicacionTexto.textContent = explicaciones[tipo].texto;
+    }
+
+    d3.dsv(";", "data/nacimientos_pereira2020.csv").then(data => {
+      data.forEach(d => {
+        let edadMatch = (d["Edad (años)"] || "").trim().match(/^\d+/);
+        d.EDAD = edadMatch ? +edadMatch[0] : NaN;
+        d.SEXO = (d["Sexo"] || "").trim().toUpperCase();
+        d.REGIMEN_SALUD = (d["Regimen Salud"] || "").trim().toUpperCase();
+      });
+
+      const datosValidos = data.filter(d => !isNaN(d.EDAD) && d.SEXO && d.REGIMEN_SALUD);
+
+      // Datos edad
+      let conteoEdad = d3.rollup(datosValidos, v => v.length, d => d.EDAD);
+      let labelsEdad = Array.from(conteoEdad.keys()).sort((a,b)=>a-b);
+      let valoresEdad = labelsEdad.map(e => conteoEdad.get(e));
+
+      // Datos sexo-regimen
+      let regimenes = Array.from(new Set(datosValidos.map(d => d.REGIMEN_SALUD)));
+      let sexos = Array.from(new Set(datosValidos.map(d => d.SEXO)));
+
+      let datasetsSexoRegimen = sexos.map((sexo,i)=>({
+        label: sexo,
+        data: regimenes.map(r => datosValidos.filter(d => d.SEXO===sexo && d.REGIMEN_SALUD===r).length),
+        backgroundColor: i===0?'#36A2EB':'#FF6384'
+      }));
+
+      // Crear gráfico
+      function crearGrafico(tipo) {
+        let config;
+        if(tipo === 'edad') {
+          config = {
+            type: 'bar',
+            data: { labels: labelsEdad, datasets:[{
+              label:'Nacimientos',
+              data: valoresEdad,
+              backgroundColor:'#FF9F40',
+              borderColor:'#FF9F40',
+              borderWidth:1,
+              hoverBackgroundColor:'#FFA366'
+            }]},
+            options: {
+              responsive:true,
+              maintainAspectRatio:false,
+              scales: { y: { beginAtZero:true } },
+              plugins: { legend:{ display:false } }
+            }
+          };
+        } else {
+          config = {
+            type:'bar',
+            data:{ labels:regimenes, datasets:datasetsSexoRegimen },
+            options:{
+              responsive:true,
+              maintainAspectRatio:false,
+              plugins:{ tooltip:{ mode:'index', intersect:false } },
+              scales:{ x:{ stacked:true }, y:{ stacked:true, beginAtZero:true } }
+            }
+          };
+        }
+
+        if(chart) {
+          chart.destroy();
+        }
+        chart = new Chart(ctx, config);
+      }
+
+      // Inicializar por defecto
+      crearGrafico(graficoSelect.value);
+      actualizarExplicacion(graficoSelect.value);
+
+      graficoSelect.addEventListener('change', () => {
+        crearGrafico(graficoSelect.value);
+        actualizarExplicacion(graficoSelect.value);
+      });
+    });
+  </script>
+</body>
+</html>
